@@ -36,3 +36,4 @@ jobs:
       - name: Use GitVersion
         id: gitversion # step id used as reference for output values
         uses: gittools/actions/execute-gitversion@v0.3
+        run: echo ${{steps.gitversion.outputs.nuGetVersion}}
