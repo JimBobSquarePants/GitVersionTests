@@ -39,3 +39,14 @@ jobs:
 
       - name: Announce GitVersion
         run: echo ${{steps.gitversion.outputs.nuGetVersion}}
+
+  Publish:
+    needs: [Build]
+    runs-on: windows-latest
+    if: (github.event_name == 'push')
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Read GitVersion
+        run: echo ${{Build.steps.gitversion.outputs.nuGetVersion}}
