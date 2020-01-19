@@ -48,5 +48,29 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Read GitVersion
-        run: echo ${{Build.steps.gitversion.outputs.nuGetVersion}}
+      - name: Setup Git
+        shell: bash
+        run: git fetch --prune --unshallow
+
+      - name: Fetch Tags for GitVersion
+        run: git fetch --tags
+
+      - name: Fetch master for GitVersion
+        if: github.ref != 'refs/heads/master'
+        run: git branch --create-reflog master origin/master
+
+      - name: Install GitVersion
+        uses: gittools/actions/setup-gitversion@v0.3
+        with:
+          versionSpec: "5.1.x"
+
+      - name: Use GitVersion
+        id: gitversion # step id used as reference for output values
+        uses: gittools/actions/execute-gitversion@v0.3
+
+      - name: Announce GitVersion
+        run: echo ${{steps.gitversion.outputs.nuGetVersion}}
+
+      - name: Publish Tags
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo publishing ${{steps.gitversion.outputs.nuGetVersion}}
